@@ -1,5 +1,6 @@
 
 $(document).ready(function(){
+
   var flagger = true;
      var score = 0;
      var answerArray = [];
@@ -8,6 +9,12 @@ $(document).ready(function(){
      var colors = ['red', 'green', 'blue', 'yellow'];
      var count = 0;
      var level = 3;
+     var redSound = new Audio("media/redSound.mp3")
+     var blueSound = new Audio("media/blueSound.mp3");
+     var greenSound = new Audio("media/greenSound.mp3");
+     var yellowSound = new Audio("media/yellowSound.mp3");
+     var failSound = new Audio("media/failSound.mp3");
+    //  yellowSound.play();
 
      $('.log-btn').on('click',function() {
        console.log('answers '+ answerArray);
@@ -22,14 +29,17 @@ $(document).ready(function(){
 
        $('.box').removeClass('flash');
        var interval = setInterval(function() {
-          var randoNum = Math.floor(Math.random()*(0,3)+0);
+          var randoNum = Math.floor(Math.random()*(4)+0);
           var randomColor = colors[randoNum];
           answerArray.push(randomColor);
            var selected = $('.' + randomColor);
-           selected.addClass('black');
+           selected.addClass(randomColor + 'Light');
+
+           var soundToPlay = eval(randomColor + "Sound");
+           soundToPlay.play();
            setTimeout(function() {
              console.log(count,flag);
-               selected.removeClass('black');
+               selected.removeClass(randomColor + 'Light');
            }, 500);
            //end interval sets flag equal true for inputs
            if(count >= level){
@@ -48,18 +58,21 @@ $(document).ready(function(){
        });
 //2 inputs() triggers, get class name, check with answerArray, continue with game.
      function reset() {
-       
+
        count = 0;
        flag = false;
        userInput.splice(0,userInput.length);
        answerArray.splice(0,answerArray.length);
      }
      function inputs(that) {
+        var clicked = $(that).attr('class').split(" ")[1];
+        console.log(clicked)
 
-       $(that).addClass('black');
-
+       $(that).addClass(clicked +'Light');
+       var clickedSound = eval(clicked + "Sound")
+        clickedSound.play()
          setTimeout(function() {
-             $(that).removeClass('black');
+             $(that).removeClass(clicked +'Light');
          }, 200);
 
         var userID = that['0'].className;
@@ -73,6 +86,7 @@ $(document).ready(function(){
 
         if (user!==answer) {
           $(that).addClass('flash');
+          failSound.play();
           console.log("RESET");
           reset();
           //flash red
